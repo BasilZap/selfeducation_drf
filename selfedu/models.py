@@ -1,8 +1,9 @@
 from django.db import models
 
-from users.models import NULLABLE
+from users.models import NULLABLE, User
 
 
+# Модель "Раздел"
 class Chapter(models.Model):
     name = models.CharField(max_length=300, verbose_name='Раздел')
     image = models.ImageField(upload_to='selfedu/', verbose_name='Фото', **NULLABLE)
@@ -17,6 +18,7 @@ class Chapter(models.Model):
         verbose_name_plural = 'Разделы'
 
 
+# Модель "Материал"
 class Material(models.Model):
     chapter = models.ForeignKey(Chapter, on_delete=models.CASCADE, verbose_name='Раздел')
     name = models.CharField(max_length=300, verbose_name='Материал')
@@ -33,6 +35,7 @@ class Material(models.Model):
         verbose_name_plural = 'Материалы'
 
 
+# Модель "Тестовый вопрос"
 class TestQuestion(models.Model):
     material = models.ForeignKey(Material, on_delete=models.CASCADE, verbose_name='Материал')
     question = models.TextField(verbose_name='Вопрос')
@@ -46,6 +49,7 @@ class TestQuestion(models.Model):
         verbose_name_plural = 'Тестовые вопросы'
 
 
+# Модель "Вариант ответа"
 class TestAnswer(models.Model):
     question = models.ForeignKey(TestQuestion, on_delete=models.CASCADE, verbose_name='Тестовый вопрос')
     answer = models.TextField(verbose_name='Вариант ответа')
@@ -57,3 +61,10 @@ class TestAnswer(models.Model):
     class Meta:
         verbose_name = 'Вариант ответа'
         verbose_name_plural = 'Варианты ответов'
+
+
+# Модель "Пройденный тест"
+class UserTestComplete(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь')
+    question = models.ForeignKey(TestQuestion, on_delete=models.CASCADE, verbose_name='Тестовый вопрос')
+    is_done = models.BooleanField(default=False, verbose_name='Отвечен')
