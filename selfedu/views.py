@@ -49,3 +49,41 @@ class TestAnswerAPIView(generics.ListAPIView):
     serializer_class = TestAnswerSerializer
     queryset = TestAnswer.objects.select_related('question')
 
+
+@api_view(['POST'])
+def check_test(request):
+    """
+    Представление для проверки одного теста материала
+    """
+    if request.data:
+        # Получаем ответ пользователя
+        data = dict(request.data)
+        message = check_user_answer(data, request.user)
+    else:
+        message = {"success": False, "hint": "Запрос не содержит данных"}
+    return Response(message)
+
+
+@api_view(['POST'])
+def check_tests(request):
+    """
+    Представление для проверки всех тестов материала
+    """
+    message_list = []
+    message = {}
+    if request.data:
+        try:
+            # Получаем ответы пользователя на все вопросы темы
+            data = dict(request.data)
+            # Перебор всех вопросов
+            for tests in data['answers']:
+                # Проверяем ответы с помощью функции check_user_answer
+                checked = check_user_answer(tests, request.user)
+                message_list.append({tests['id']: checked})
+            message.update({'answers': message_list})
+        except KeyError:
+            message = {"success": False, "hint": "Проверьте правильность наименования ключей ('id', 'answers')"}
+    # Отправляем пользователю сообщение о том, что запрос пустой
+    else:
+        message = {"success": False, "hint": "Запрос не содержит данных"}
+    return Response(message)
