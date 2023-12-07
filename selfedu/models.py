@@ -39,7 +39,7 @@ class Material(models.Model):
 class TestQuestion(models.Model):
     material = models.ForeignKey(Material, on_delete=models.CASCADE, verbose_name='Материал')
     question = models.TextField(verbose_name='Вопрос')
-    hint = models.TextField(verbose_name='Подсказка')
+    hint = models.TextField(verbose_name='Подсказка', **NULLABLE)
 
     def __str__(self):
         return f'{self.question}, материал - {self.material}'
@@ -68,3 +68,7 @@ class UserTestComplete(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь')
     question = models.ForeignKey(TestQuestion, on_delete=models.CASCADE, verbose_name='Тестовый вопрос')
     is_done = models.BooleanField(default=False, verbose_name='Отвечен')
+
+    class Meta:
+        verbose_name = 'Тест пройден'
+        verbose_name_plural = 'Тесты пройдены'
